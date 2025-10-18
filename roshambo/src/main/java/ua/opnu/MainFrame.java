@@ -1,10 +1,16 @@
 package ua.opnu;
 
+import org.ietf.jgss.GSSManager;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Objects;
 import java.util.Random;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class MainFrame extends JFrame implements ActionListener {
 
@@ -37,52 +43,65 @@ public class MainFrame extends JFrame implements ActionListener {
     }
 
     private GameShape generateShape() {
-
-        // TODO: написати логіку методу
-
-        // Метод повертає об'єкт ігрової фігури (камінь, ножиці чи папір)
-        // випадковим чином
-
         int random = new Random().nextInt(3);
-
-        return new GameShape(); // TODO: змініть на об'єкт потрібної фігури
+        return switch (random) {
+            case 0 -> new Rock();
+            case 1 -> new Paper();
+            default -> new Cutter();
+        };
     }
 
     private int checkWinner(GameShape player, GameShape computer) {
+        // Це моє рішення, але воно не підходить під завдання
+//        Map<String, String> winnerTable = new HashMap<>();
+//
+//        winnerTable.put("Rock", "Cutter");
+//        winnerTable.put("Cutter", "Paper");
+//        winnerTable.put("Paper", "Rock");
+//
+//        String playerShape = player.toString();
+//        String computerShape = computer.toString();
+//
+//        for (Map.Entry<String, String> entry : winnerTable.entrySet()) {
+//            String key = entry.getKey();
+//            String value = entry.getValue();
+//            if (Objects.equals(playerShape, key) && Objects.equals(computerShape, value)) {
+//                return 1;
+//            } else if (Objects.equals(computerShape, key) && Objects.equals(playerShape, value)) {
+//                return -1;
+//            }
+//        }
+        if (player instanceof Rock && computer instanceof Cutter) return 1;
+        if (player instanceof Cutter && computer instanceof Rock) return -1;
 
-        // Метод отримує клас фігури гравця і комп'ютера за допомогою оператора instanceof
-        // Метод повертає 1 якщо переміг гравець
-        // Метод повертає 0 якщо нічия (обидві фігури однакові)
-        // Метод повертає -1 якщо переміг комп'ютер
+        if (player instanceof Cutter && computer instanceof Paper) return 1;
+        if (player instanceof Paper && computer instanceof Cutter) return -1;
 
-        // TODO: написати логіку методу
+        if (player instanceof Paper && computer instanceof Rock) return 1;
+        if (player instanceof Rock && computer instanceof Paper) return -1;
 
         return 0;
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        // Генерується ход комп'ютеру
         GameShape computerShape = generateShape();
 
-        GameShape playerShape = new GameShape();
-        // Визначаємо, на яку кнопку натиснув гравець
+        GameShape playerShape = null;
         switch (e.getActionCommand()) {
             case "rock":
-                // присвоїти playerShape об'єкт відповідного класу
+                playerShape = new Rock();
                 break;
             case "paper":
-                // присвоїти playerShape об'єкт відповідного класу
+                playerShape = new Paper();
                 break;
             case "scissors":
-                // присвоїти playerShape об'єкт відповідного класу
+                playerShape = new Cutter();
                 break;
         }
 
-        // Визначити результат гри
         int gameResult = checkWinner(playerShape, computerShape);
 
-        // Сформувати повідомлення
         String message = "Player shape: " + playerShape + ". Computer shape: " + computerShape + ". ";
         switch (gameResult) {
             case -1:
@@ -95,7 +114,6 @@ public class MainFrame extends JFrame implements ActionListener {
                 message += "Player has won!";
         }
 
-        // Вивести діалогове вікно з повідомленням
         JOptionPane.showMessageDialog(null, message);
     }
 }
